@@ -8,6 +8,12 @@ export const getUsers = async (): Promise<userType[]> => {
   return data;
 };
 
+export const getOrders = async (): Promise<orderType[]> => {
+  const res = await fetch(`${baseUrl}/orders`);
+  const data = await res.json();
+  return data;
+};
+
 export const checkOrder = async ({
   userName,
   docName,
