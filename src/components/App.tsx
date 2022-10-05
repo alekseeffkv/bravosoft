@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { CssBaseline } from '@mui/material';
-import Form from './Form';
+import HomePage from './HomePage';
 
 const App: FC = () => {
   return (
     <>
       <CssBaseline />
-      <Form />
+      <HomePage />
     </>
   );
 };

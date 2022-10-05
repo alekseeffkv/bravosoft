@@ -53,7 +53,7 @@ const Form: FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Stack spacing={2}>
+      <Stack spacing={3}>
         <TextField
           id="userName"
           name="userName"
