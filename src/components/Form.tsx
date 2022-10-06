@@ -1,6 +1,7 @@
 import type { userType } from '../types';
 import { FC, useEffect, useState } from 'react';
 import { createOrder, checkOrder, getUsers } from '../utils/api';
+import { useAuth } from '../hook/useAuth';
 import {
   Alert,
   Box,
@@ -11,17 +12,30 @@ import {
   TextField,
 } from '@mui/material';
 
-const defaultValues = {
+const defaultFormValues = {
   userName: '',
   docName: '',
 };
 
+const defaultAlert = {
+  isOpen: false,
+  message: '',
+};
+
+const orderError =
+  'Вы уже отправляли заявку на этот документ, она уже была учтена';
+
+const authError = 'Заявку можно отправить только под своим именем';
+
 const Form: FC = () => {
-  const [formValues, setFormValues] = useState(defaultValues);
+  const [formValues, setFormValues] = useState(defaultFormValues);
   const [users, setUsers] = useState<userType[]>([]);
-  const [openAlert, setOpenAlert] = useState(false);
+  const [openAlert, setOpenAlert] = useState(defaultAlert);
+
+  const { user } = useAuth();
 
   const { userName, docName } = formValues;
+  const { isOpen, message } = openAlert;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -33,17 +47,20 @@ const Form: FC = () => {
 
     checkOrder(formValues).then((res) => {
       if (res.length !== 0) {
-        setOpenAlert(true);
-        return;
+        setOpenAlert({ isOpen: true, message: orderError });
+      } else {
+        if (userName === user?.name) {
+          createOrder(formValues);
+        } else {
+          setOpenAlert({ isOpen: true, message: authError });
+        }
       }
     });
 
-    createOrder(formValues);
-
-    setFormValues(defaultValues);
+    setFormValues(defaultFormValues);
   };
 
-  const handleCloseAlert = () => setOpenAlert(false);
+  const handleCloseAlert = () => setOpenAlert(defaultAlert);
 
   useEffect(() => {
     getUsers().then((res) => {
@@ -87,13 +104,13 @@ const Form: FC = () => {
           </Button>
         </Box>
 
-        <Fade in={openAlert}>
+        <Fade in={isOpen}>
           <Alert
             severity="error"
             closeText="Закрыть"
             onClose={handleCloseAlert}
           >
-            Вы уже отправляли заявку на этот документ, она уже была учтена
+            {message}
           </Alert>
         </Fade>
       </Stack>

@@ -25,6 +25,17 @@ export const checkOrder = async ({
   return data;
 };
 
+export const checkUser = async ({
+  login,
+  password,
+}: userType): Promise<userType[]> => {
+  const res = await fetch(
+    `${baseUrl}/users?login=${login}&password=${password}`
+  );
+  const data = await res.json();
+  return data;
+};
+
 export const createOrder = async (data: orderType) => {
   const res = await fetch(`${baseUrl}/orders`, {
     method: 'POST',
